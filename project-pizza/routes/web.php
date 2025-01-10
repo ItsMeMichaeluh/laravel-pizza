@@ -9,3 +9,4 @@ Route::post('/cart/increase', [PizzaController::class, 'increaseQuantity'])->nam
 Route::post('/cart/decrease', [PizzaController::class, 'decreaseQuantity'])->name('cart.decrease');
 Route::post('/cart/remove', [PizzaController::class, 'removeFromCart'])->name('cart.remove');
 
+

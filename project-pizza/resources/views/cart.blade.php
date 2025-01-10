@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('content')
@@ -17,19 +16,19 @@
                 <form action="{{ route('cart.increase') }}" method="POST" style="display: inline-block;">
                     @csrf
                     <input type="hidden" name="id" value="{{ $item['id'] }}">
-                    <button class="btn" style="background: #28a745;">+</button>
+                    <button class="btn">+</button>
                 </form>
 
                 <form action="{{ route('cart.decrease') }}" method="POST" style="display: inline-block;">
                     @csrf
                     <input type="hidden" name="id" value="{{ $item['id'] }}">
-                    <button class="btn" style="background: #dc3545;">-</button>
+                    <button class="btn btn-danger">-</button>
                 </form>
 
-                <form action="{{ route('cart.remove') }}" method="POST" style="display: inline-block; margin-left: 10px;">
+                <form action="{{ route('cart.remove') }}" method="POST" style="display: inline-block;">
                     @csrf
                     <input type="hidden" name="id" value="{{ $item['id'] }}">
-                    <button class="btn" style="background: #ffc107;">Remove</button>
+                    <button class="btn btn-warning">Remove</button>
                 </form>
             </div>
         @endforeach

@@ -1,3 +1,70 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+-----------------NAVBAR
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f9f9f9;
+    }
+
+    .navbar {
+        background-color: #333;
+        padding: 10px;
+        color: white;
+        display: flex; /* Gebruik Flexbox */
+        justify-content: space-between; /* Verdeel links en rechts gelijkmatig */
+        align-items: center; /* Centreer de tekst verticaal */
+        min-height: 3vh;
+    }
+
+    .navbar a {
+        color: white;
+        text-decoration: none;
+        padding: 10px;
+        margin: 0 15px;
+    }
+
+    .navbar a:hover {
+        background-color: #555;
+    }
+
+    .navbar .cart {
+        margin-left: auto; /* Zorg dat de cart helemaal rechts komt */
+    }
+
+    .container {
+        width: 80%;
+        margin: auto;
+    }
+
+    .cart-item,
+    .pizza {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin: 10px;
+        border-radius: 5px;
+        background: #fff;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 15px;
+        background: #28a745;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        opacity: 0.9;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+    }
+
+    .btn-warning {
+        background: #ffc107;
+    }
+

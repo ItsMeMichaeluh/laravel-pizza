@@ -38,3 +38,11 @@
 
     <a href="{{ route('home') }}" class="btn">Continue Shopping</a>
 @endsection
+
+@if (count($cart) > 0)
+    <form action="{{ route('checkout') }}" method="POST" style="margin-top: 20px;">
+        @csrf
+        <button class="btn btn-success">Betalen</button>
+    </form>
+@endif
+

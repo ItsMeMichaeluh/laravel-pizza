@@ -6,7 +6,7 @@
         @foreach ($pizzas as $pizza)
             <div class="pizza">
                 <h3>{{ $pizza['name'] }}</h3>
-                <p>{{ $pizza['description'] }}</p>
+
                 <p><strong>€{{ $pizza['price'] }}</strong></p>
                 <form action="{{ route('cart.add') }}" method="POST">
                     @csrf

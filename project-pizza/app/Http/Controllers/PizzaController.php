@@ -3,18 +3,53 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Orders;
 
 class PizzaController extends Controller
 {
     public function index()
     {
+        // Laad de beschikbare pizza's
         $pizzas = [
-            ['id' => 1, 'name' => 'Margherita', 'description' => 'Classic cheese and tomato pizza', 'price' => 7.50],
-            ['id' => 2, 'name' => 'Pepperoni', 'description' => 'Topped with pepperoni slices', 'price' => 9.00],
-            ['id' => 3, 'name' => 'Hawaiian', 'description' => 'Ham and pineapple topping', 'price' => 8.50],
+            ['id' => 1, 'name' => 'Margherita', 'price' => 8.99],
+            ['id' => 2, 'name' => 'Pepperoni', 'price' => 10.99],
+            ['id' => 3, 'name' => 'Hawaii', 'price' => 9.99],
         ];
 
         return view('home', compact('pizzas'));
+    }
+
+    public function addToCart(Request $request)
+    {
+        $cart = session()->get('cart', []);
+
+        $pizzaId = $request->id;
+        $pizzaName = $request->name;
+        $pizzaPrice = $request->price;
+
+        // Check if pizza al in de winkelwagen zit
+        $found = false;
+        foreach ($cart as &$item) {
+            if ($item['id'] == $pizzaId) {
+                $item['quantity'] += 1;
+                $found = true;
+                break;
+            }
+        }
+
+        // Zo niet, voeg een nieuw item toe
+        if (!$found) {
+            $cart[] = [
+                'id' => $pizzaId,
+                'name' => $pizzaName,
+                'price' => $pizzaPrice,
+                'quantity' => 1,
+            ];
+        }
+
+        session()->put('cart', $cart);
+
+        return redirect()->route('cart')->with('success', 'Pizza toegevoegd aan winkelwagen!');
     }
 
     public function cart()
@@ -23,67 +58,62 @@ class PizzaController extends Controller
         return view('cart', compact('cart'));
     }
 
-    public function addToCart(Request $request)
-    {
-        $pizza = $request->only('id', 'name', 'price');
-        $cart = session()->get('cart', []);
-
-        $exists = false;
-        foreach ($cart as &$item) {
-            if ($item['id'] == $pizza['id']) {
-                $item['quantity'] += 1;
-                $exists = true;
-                break;
-            }
-        }
-
-        if (!$exists) {
-            $pizza['quantity'] = 1;
-            $cart[] = $pizza;
-        }
-
-        session()->put('cart', $cart);
-
-        return redirect()->route('cart')->with('success', 'Pizza added to cart!');
-    }
-
     public function increaseQuantity(Request $request)
     {
         $cart = session()->get('cart', []);
+
         foreach ($cart as &$item) {
             if ($item['id'] == $request->id) {
                 $item['quantity'] += 1;
                 break;
             }
         }
+
         session()->put('cart', $cart);
 
-        return redirect()->route('cart')->with('success', 'Item quantity increased!');
+        return redirect()->route('cart')->with('success', 'Aantal verhoogd!');
     }
 
     public function decreaseQuantity(Request $request)
     {
         $cart = session()->get('cart', []);
-        foreach ($cart as &$item) {
+
+        foreach ($cart as $key => &$item) {
             if ($item['id'] == $request->id) {
                 $item['quantity'] -= 1;
                 if ($item['quantity'] <= 0) {
-                    $cart = array_filter($cart, fn($i) => $i['id'] != $request->id);
+                    unset($cart[$key]);
                 }
                 break;
             }
         }
+
         session()->put('cart', $cart);
 
-        return redirect()->route('cart')->with('success', 'Item quantity decreased!');
+        return redirect()->route('cart')->with('success', 'Aantal verlaagd!');
     }
 
-    public function removeFromCart(Request $request)
+    public function checkout(Request $request)
     {
         $cart = session()->get('cart', []);
-        $cart = array_filter($cart, fn($item) => $item['id'] != $request->id);
-        session()->put('cart', $cart);
+        if (empty($cart)) {
+            return redirect()->route('cart')->with('error', 'Je winkelwagen is leeg.');
+        }
 
-        return redirect()->route('cart')->with('success', 'Item removed from cart!');
+        // Bereken het totaalbedrag
+        $total = array_reduce($cart, function ($sum, $item) {
+            return $sum + ($item['price'] * $item['quantity']);
+        }, 0);
+
+        // Sla de bestelling op in de database
+        $orders = Orders::create([
+            'items' => json_encode($cart),
+            'total' => $total,
+        ]);
+
+        // Maak de winkelwagen leeg
+        session()->forget('cart');
+
+        return view('checkout', compact('orders'));
     }
 }

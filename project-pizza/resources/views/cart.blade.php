@@ -45,4 +45,3 @@
         <button class="btn btn-success">Betalen</button>
     </form>
 @endif
-

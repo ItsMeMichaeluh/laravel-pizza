@@ -1,17 +1,25 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1>Order Summary</h1>
-    <p><strong>Order ID:</strong> {{ $orders->id }}</p>
-    <p><strong>Total:</strong> €{{ $orders->total }}</p>
-    <h2>Items:</h2>
-    <ul>
-        @foreach ($orders->items as $item)
-            <li>
-                {{ $item['name'] }} - €{{ $item['price'] }} x {{ $item['quantity'] }}
-                = €{{ $item['price'] * $item['quantity'] }}
-            </li>
+    @php
+        // Decode de JSON-string naar een array
+        $items = json_decode($orders->items, true);
+    @endphp
+
+    @if(is_array($items))
+        @foreach($items as $item)
+            <div>
+                <p>Item ID: {{ $item['id'] }}</p>
+                <p>Item Naam: {{ $item['name'] }}</p>
+                <p>Item Prijs: €{{ number_format($item['price'], 2) }}</p>
+                <p>Aantal: {{ $item['quantity'] }}</p>
+            </div>
         @endforeach
-    </ul>
+    @else
+        <p>Geen items gevonden in deze bestelling.</p>
+    @endif
+
+    <p>Totaal: €{{ number_format($orders->total, 2) }}</p>
+
     <a href="{{ route('home') }}" class="btn">Back to Shop</a>
 @endsection
